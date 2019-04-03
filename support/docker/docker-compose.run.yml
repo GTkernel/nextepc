@@ -1,22 +1,69 @@
 version: '3'
 
 services:
+
+  base:
+    build:
+      context: ./${DIST-ubuntu}/${TAG-latest}/base
+      args:
+        dist: ${DIST-ubuntu}
+        tag: ${TAG-latest}
+    image: ${USER}/${DIST-ubuntu}-${TAG-latest}-nextepc-base
+    command: /bin/bash -c "echo 'base' services"
+
+  mongodb:
+    image: mongo
+    container_name: nextepc-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+
+  webui:
+    build: webui
+    image: ${USER}/nextepc-webui
+    container_name: nextepc-webui
+    depends_on:
+      - mongodb
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    environment:
+      DB_URI: mongodb://mongodb/nextepc
+
+  build:
+    build:
+      context: ./build
+      args:
+        dist: ${DIST-ubuntu}
+        tag: ${TAG-latest}
+        username: ${USER}
+    image: ${USER}/${DIST-ubuntu}-${TAG-latest}-nextepc-build
+    depends_on:
+      - base
+    command: /bin/bash -c "echo 'build' services"
+
   run:
     network_mode: "host"
     image: ${USER}/${DIST-ubuntu}-${TAG-latest}-nextepc-build
     depends_on:
       - mongodb
       - build
+      - webui
     cap_add:
       - NET_ADMIN
     devices:
       - "/dev/net/tun:/dev/net/tun"
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv4.ip_forward=1
     volumes:
       - config:/etc/nextepc
     hostname: nextepc-run
-    command: /bin/bash -c "/root/setup.sh; /usr/bin/nextepc-epcd"
+#    command: /bin/bash -c "/root/setup.sh; /usr/bin/nextepc-epcd"
+    command: /bin/bash -c "/bin/bash"
 
 volumes:
   config: {}
+  mongodb: {}
