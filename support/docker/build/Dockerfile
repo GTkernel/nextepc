@@ -1,12 +1,12 @@
 ARG dist=ubuntu
 ARG tag=latest
-ARG username=acetcom
+ARG username=gtenb
 FROM ${username}/${dist}-${tag}-nextepc-base
 
 MAINTAINER Sukchan Lee <acetcom@gmail.com>
 
 WORKDIR /root
-COPY setup.sh /root
+COPY setup.sh nextepc.conf /root/
 
 ARG USER=acetcom
 ARG REPO=nextepc
@@ -22,3 +22,4 @@ RUN	cd nextepc && \
         --sysconfdir=/etc \
         --localstatedir=/var && \
     make -j `nproc` install
+

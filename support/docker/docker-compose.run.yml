@@ -61,8 +61,8 @@ services:
     volumes:
       - config:/etc/nextepc
     hostname: nextepc-run
-#    command: /bin/bash -c "/root/setup.sh; /usr/bin/nextepc-epcd"
-    command: /bin/bash -c "/bin/bash"
+    command: |
+        /bin/bash -c "/root/setup.sh; nextepc-epcd"
 
 volumes:
   config: {}
