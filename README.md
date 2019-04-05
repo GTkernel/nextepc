@@ -16,6 +16,13 @@ NextEPC contains the PCRF (Policy and Charging Rules Function), which controls t
 Installation 
 ============
 
+* ### Run by every component as a whole by Docker compose
+```
+$ cd support/docker
+
+$ docker-compose -f docker-compose.run.yml run run
+```
+
 * ### MME, SGW, PGW, HSS, and PCRF
 
 The NextEPC package is available on the recent versions of Ubuntu.
