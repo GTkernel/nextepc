@@ -1,0 +1,137 @@
+## Mongola DB 
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: core-network
+spec:
+  selector:
+    func: db
+  ports:
+    - port: 27017
+## WebUI
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webui
+  namespace: core-network
+spec:
+  type: NodePort
+  selector:
+    func: webui
+  ports:
+    - port: 3000
+---
+### a deployment of DB, UI, NextEPC
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epc-db
+  namespace: core-network
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: db
+  template:
+    metadata:
+      labels:
+        func: db
+    spec:
+      securityContext:
+        fsGroup: 2000
+      #hostname: nextepc-db
+      volumes:
+      - name: db-dir
+        persistentVolumeClaim:
+          claimName: epc-db
+      containers:
+      - name: epc-db
+        image: gabbro:30500/nextepc-db:test
+        imagePullPolicy: Never
+        volumeMounts:
+          - mountPath: /data/db
+            name: db-dir
+        ports:
+        - containerPort: 27017
+# TODO: super strange that requiring to add the entry command again to prevent "chown operation error"
+        command:
+        - /bin/bash
+        - -c
+        - "docker-entrypoint.sh; mongod"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epc-webui
+  namespace: core-network
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: webui
+  template:
+    metadata:
+      labels:
+        func: webui
+    spec:
+      hostname: nextepc-webui
+      containers:
+      - name: epc-webui
+        image: gabbro:30500/nextepc-webui:test
+        imagePullPolicy: Never
+        env:
+        - name: DB_URI
+          value: mongodb://db.core-network/nextepc
+        ports:
+        - containerPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epc
+  namespace: core-network
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: epc
+  template:
+    metadata:
+      labels:
+        func: epc
+    spec:
+      securityContext:
+        sysctls:
+        - name: net.ipv6.conf.all.disable_ipv6
+          value: "0"
+        - name: net.ipv4.ip_forward
+          value: "1"
+      nodeSelector:
+        corenet: "v-ran"
+      volumes:
+      - name: pgw-character-device
+        hostPath:
+          path: /dev/net/tun
+          type: CharDevice
+      containers:
+      - name: epc
+        image: gabbro:30500/nextepc-epc:test
+        imagePullPolicy: Never
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        command:
+        - /bin/bash
+        - -c
+        - "/root/setup.sh; nextepc-epcd"
+        volumeMounts:
+        - mountPath: /dev/net/tun
+          name: pgw-character-device
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
