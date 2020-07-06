@@ -62,3 +62,15 @@ For Mac OS X (SCTP-patch)
 ===========================================
 * /Applications/Docker.app/Contents/Resources/moby
 Update linuxkit-kernel, vmlinuz64
+
+For Kubernetes
+===========================================
+* Build base images
+  $ docker-compose build
+
+* Go back to root directory, build Docker images by the Dockerfile for nextepc
+
+* retag images for your customized environment
+MongoDB for nextepc-db, ${USER}/nextepc-webui for nextepc-webui, and last step for nextepc
+
+* Go to k8s/ for running configuration files

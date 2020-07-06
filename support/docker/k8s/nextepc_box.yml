@@ -104,6 +104,8 @@ spec:
       containers:
       - name: epc
         image: gabbro:30500/nextepc-epc:test
+#test-epc-v2:latest
+#gabbro:30500/nextepc-epc:test
         imagePullPolicy: Never
         env:
         - name: MY_POD_IP

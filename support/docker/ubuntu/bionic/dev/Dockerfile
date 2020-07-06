@@ -17,7 +17,7 @@ RUN apt-get update && \
         manpages-dev \
         fakeroot \
         cscope \
-        vim \
+#        vim \
         sudo \
         iputils-ping \
         wireshark \
