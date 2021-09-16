@@ -11,7 +11,9 @@ you will not need to download any other setups online.
 
 ### Build and Run
 
+#### K8s
 
+To run your NextEPC on Kubernetes, pleace check [here](https://github.gatech.edu/kernel-benchmark-suite/nextepc/blob/master/support/docker/k8s/)
 
 ## Support
 
