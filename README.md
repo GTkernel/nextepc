@@ -1,7 +1,7 @@
 # NextEPC
 
 [NextEPC](https://nextepc.com) is the open source software LTE core network supported 3GPP R13.
-It original README is at [here](https://github.gatech.edu/kernel-benchmark-suite/nextepc/blob/master/OFFICIAL_README.md). 
+It original README is at [here](https://github.com/GTkernel/nextepc/blob/master/OFFICIAL_README.md). 
 
 ## How to start 
 
@@ -13,7 +13,7 @@ you will not need to download any other setups online.
 
 #### K8s
 
-To run your NextEPC on Kubernetes, pleace check [here](https://github.gatech.edu/kernel-benchmark-suite/nextepc/blob/master/support/docker/k8s/)
+To run your NextEPC on Kubernetes, pleace check [here](https://github.com/GTkernel/nextepc/blob/master/support/docker/k8s/)
 
 ## Support
 
