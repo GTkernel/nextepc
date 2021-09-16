@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ros-another
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: ros-another
+  template:
+    metadata:
+      labels:
+        func: ros-another
+    spec:
+      hostname: roscore
+      nodeName: basalt
+      containers:
+      - name: core
+        image: gabbro:30500/ros:pubsub
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 11311
+        env:
+        - name: ROS_MASTER_URI
+          value: http://0.0.0.0:11311/
+        command:
+        - /bin/bash
+        - -c
+        - "source /opt/ros/devel/setup.bash && roscore"
+      - name: sub
+        image: gabbro:30500/ros:pubsub
+        imagePullPolicy: Never
+        command:
+        - /bin/bash
+        - -c
+        - 'sleep 10 && source /opt/ros/devel/setup.bash && rosrun roscpp_tutorials listener'

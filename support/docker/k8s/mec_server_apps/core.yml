@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: roscore
+spec:
+  selector:
+    func: ros-core
+  ports:
+    - port: 11311
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: roscore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: ros-core
+  template:
+    metadata:
+      labels:
+        func: ros-core
+    spec:
+      hostname: roscore
+      nodeName: basalt
+      containers:
+      - name: core
+        image: gabbro:30500/ros:pubsub
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 11311
+        env:
+        - name: ROS_MASTER_URI
+          value: http://0.0.0.0:11311/
+        command:
+        - /bin/bash
+        - -c
+        - "source /opt/ros/devel/setup.bash && roscore"

@@ -1,0 +1,50 @@
+## Mongola DB 
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: core-network
+spec:
+  selector:
+    func: db
+  ports:
+    - port: 27017
+---
+### a deployment of DB, UI, NextEPC
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epc-db
+  namespace: core-network
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: db
+  template:
+    metadata:
+      labels:
+        func: db
+    spec:
+      volumes:
+      - name: db-dir
+        persistentVolumeClaim:
+          claimName: epc-db
+      - name: log-dir
+        persistentVolumeClaim:
+          claimName: epc-log
+      containers:
+      - name: epc-db
+        image: mongo:4.4.0-bionic
+        imagePullPolicy: Never
+        volumeMounts:
+          - mountPath: /var/lib/mongodb
+            name: db-dir
+          - mountPath: /var/log/mongodb
+            name: log-dir
+        ports:
+        - containerPort: 27017
+        command:
+        - /bin/bash
+        - -c
+        - "mongod --dbpath /var/lib/mongodb --logpath /var/log/mongodb/mongodb.log --bind_ip 0.0.0.0"

@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webui
+  namespace: core-network
+spec:
+  type: NodePort
+  selector:
+    func: webui
+  ports:
+    - port: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epc-webui
+  namespace: core-network
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: webui
+  template:
+    metadata:
+      labels:
+        func: webui
+    spec:
+      hostname: nextepc-webui
+      containers:
+      - name: epc-webui
+        image: gabbro:30500/nextepc-webui:test
+        imagePullPolicy: Never
+        env:
+        - name: DB_URI
+          value: mongodb://db.core-network/nextepc
+        ports:
+        - containerPort: 3000

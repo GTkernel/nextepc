@@ -25,3 +25,30 @@ spec:
   resources:
     requests:
       storage: 500Mi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: epc-log-pv
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/mnt/nextepc/log"
+    server: "143.215.128.212"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: epc-log
+  namespace: core-network
+spec:
+  storageClassName: ""
+  volumeName: epc-log-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Mi

@@ -30,7 +30,8 @@ spec:
             fieldRef:
               fieldPath: status.podIP
         - name: EPC_IP
-          value: "192.168.0.3"
+#          value: "10.32.0.3"
+          value: "143.215.128.212"
         command:
         - /bin/bash
         - -c

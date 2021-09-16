@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rospub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: ros-pub
+  template:
+    metadata:
+      labels:
+        func: ros-pub
+    spec:
+      nodeName: granite
+      containers:
+      - name: pub
+        image: gabbro:30500/ros:pubsub
+        imagePullPolicy: Never
+        env:
+        - name: ROS_MASTER_URI
+          value: http://roscore:11311/
+        - name: ROS_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        command:
+        - /bin/bash
+        - -c
+        - "sleep 1 && source /opt/ros/devel/setup.bash && rosrun roscpp_tutorials talker"

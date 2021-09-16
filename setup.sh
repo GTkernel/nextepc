@@ -15,6 +15,7 @@ ip link set pgwtun up
 #apt-get install -y iptables
 cp nextepc.conf /etc/nextepc/nextepc.conf
 sed -i "s/POD_IP/$MY_POD_IP/g" /etc/nextepc/nextepc.conf
+sed -i "s/db.core-network/$DB_IP/g" /etc/nextepc/nextepc.conf
 
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -o $INTERFACE -j MASQUERADE
 iptables -I INPUT -i pgwtun -j ACCEPT

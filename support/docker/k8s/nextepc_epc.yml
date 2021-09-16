@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epc
+  namespace: core-network
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: epc
+  template:
+    metadata:
+      labels:
+        func: epc
+    spec:
+      hostNetwork: true
+#      securityContext:
+#        sysctls:
+#        - name: net.ipv6.conf.all.disable_ipv6
+#          value: "0"
+#        - name: net.ipv4.ip_forward
+#          value: "1"
+      nodeName: gabbro
+      volumes:
+      - name: log-dir
+        persistentVolumeClaim:
+          claimName: epc-log
+      - name: pgw-character-device
+        hostPath:
+          path: /dev/net/tun
+          type: CharDevice
+      containers:
+      - name: epc
+#        image: gabbro:30500/nextepc-epc:test
+        image: nextepc_nsdi:latest
+        imagePullPolicy: Never
+        env:
+        - name: DB_IP
+          value: 10.107.78.64
+        - name: INTERFACE
+          value: eno1
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        command:
+        - /bin/bash
+        - -c
+        - "/root/setup.sh; nextepc-epcd"
+        volumeMounts:
+        - mountPath: /var/log/nextepc
+          name: log-dir
+        - mountPath: /dev/net/tun
+          name: pgw-character-device
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+            - NET_ADMIN

@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: streamer-cloud-2
+spec:
+  template:
+    metadata:
+      labels:
+        app: streamer-2
+    spec:
+      restartPolicy: Never
+      nodeName: basalt
+      containers:
+      - name: streamer
+        image: streamer:split_nne
+        command:
+        - ./apps/split_nne_rpc/cloud_rpc
+        - -n
+        - inception_resnet_v2
+        - -s
+        - 0.0.0.0:5536
+        - -t 
+        - "110"
